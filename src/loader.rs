@@ -2,12 +2,20 @@ use crate::stats::MonitoringEvent;
 use futures::future::join_all;
 use rand::seq::SliceRandom;
 use rand::thread_rng;
+use reqwest::Client;
 use std::sync::mpsc::Sender;
+use std::time::Duration;
 
 async fn do_requests(targets: Vec<&str>, stats_sink: Sender<MonitoringEvent>) {
     loop {
         for target in targets.iter() {
-            let response = reqwest::get(*target).await;
+            let client = Client::builder()
+                .timeout(Duration::from_secs(5))
+                .danger_accept_invalid_certs(true)
+                .build()
+                .unwrap();
+
+            let response = client.get(*target).send().await;
             match response {
                 Ok(response) => {
                     let response_code = response.status().as_u16();
