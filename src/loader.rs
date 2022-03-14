@@ -23,12 +23,19 @@ async fn do_requests(targets: Vec<&str>, stats_sink: Sender<MonitoringEvent>) {
                     stats_sink
                         .send(MonitoringEvent::RequestFinished {
                             target: target.to_string(),
-                            response_code,
+                            response_code: Some(response_code),
+                            error: None,
                         })
                         .unwrap();
                 }
                 Err(error) => {
-                    println!("{:?}", error);
+                    stats_sink
+                        .send(MonitoringEvent::RequestFinished {
+                            target: target.to_string(),
+                            response_code: None,
+                            error: Some(format!("{:?}", error)),
+                        })
+                        .unwrap();
                 }
             }
         }
