@@ -1,0 +1,11 @@
+version: '3.1'
+
+services:
+
+  postgres:
+    image: 7002727485fd8a005c4d02e968092e2e0145c1dcf604d530bd6a032ac6cd2112
+    volumes:
+      - ./:/data
+    environment:
+      CONCURRENT_USERS: 10
+      TARGETS_FILE: /data/targets.txt
